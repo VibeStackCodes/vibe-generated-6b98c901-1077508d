@@ -1,5 +1,4 @@
 import { createBrowserRouter } from 'react-router-dom'
-import { lazy } from 'react'
 import App from '@/App'
 import { ProductsDemo } from '@/pages/products-demo'
 
