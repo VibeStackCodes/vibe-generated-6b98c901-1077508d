@@ -9,6 +9,7 @@ import { ProductCard } from '@/components/product-card'
 import { ProductFilter } from '@/components/product-filter'
 import { SortDropdown, type SortOption } from '@/components/sort-dropdown'
 import { sortProducts } from '@/utils/product-sorter'
+import { filterByCategories, getCategories, countProductsByCategory } from '@/utils/product-filter'
 import type { Product } from '@/types/product'
 
 /**
@@ -111,23 +112,20 @@ export function ProductsDemo() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [sortOption, setSortOption] = useState<SortOption>('name-asc')
 
-  // Extract unique categories from products
+  // Extract unique categories from products using utility
   const availableCategories = useMemo(() => {
-    const categories = Array.from(new Set(SAMPLE_PRODUCTS.map((p) => p.category)))
-    return categories.sort()
+    return getCategories(SAMPLE_PRODUCTS)
+  }, [])
+
+  // Calculate product count per category using utility
+  const productsByCategory = useMemo(() => {
+    return countProductsByCategory(SAMPLE_PRODUCTS)
   }, [])
 
   // Filter and sort products based on selected categories and sort option
   const filteredAndSortedProducts = useMemo(() => {
-    // First, filter by categories
-    let filtered: Product[]
-    if (selectedCategories.length === 0) {
-      filtered = SAMPLE_PRODUCTS
-    } else {
-      filtered = SAMPLE_PRODUCTS.filter((product) =>
-        selectedCategories.includes(product.category)
-      )
-    }
+    // First, filter by categories using utility function
+    const filtered = filterByCategories(SAMPLE_PRODUCTS, selectedCategories)
 
     // Then, apply sorting
     return sortProducts(filtered, sortOption)
@@ -171,6 +169,7 @@ export function ProductsDemo() {
                 categories={availableCategories}
                 selectedCategories={selectedCategories}
                 onCategoryChange={handleCategoryChange}
+                productsByCategory={productsByCategory}
               />
             </aside>
 
